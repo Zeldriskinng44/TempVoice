@@ -1,6 +1,6 @@
 # TempVoice
 
-An upcoming implementation of a temp voice bot with user and admin commands.
+An open source upcoming implementation of a temp voice bot with user and admin commands. Should work on multiple servers.
 
 ### Prerequisites
 
@@ -11,17 +11,16 @@ An upcoming implementation of a temp voice bot with user and admin commands.
 ### Setup
 1. To setup run the following commands
 ```npm
-npm install discord.js dotenv sqlite3
+npm install discord.js dotenv
 ```
 
 2. Populate the categories in the .env file (Rename env.example to .env):
 ```env   
 DISCORD_TOKEN=""
 CLIENTID = ""
-OWNERID = ""
 ADMINROLEID = ""
-SERVERID = ""
-DATABASENAME=""
+#SERVER ID IS REQUIRED FOR A SERVER TO DEPLOY GUILD COMMANDS TO.
+SERVERID = "" 
 ```
 
-You may need to run `node deploy-commands` and `node deploy-database`
+You will need to run `node deploy-commands`.
