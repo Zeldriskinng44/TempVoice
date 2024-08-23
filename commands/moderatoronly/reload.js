@@ -4,6 +4,7 @@ const ownerId = process.env.OWNERID;
 
 module.exports = {
 	category: 'utility',
+	notglobal: [],
 	data: new SlashCommandBuilder()
 		.setName('reload')
 		.setDescription('Reloads a command.')
