@@ -69,6 +69,40 @@ function readSettingsFile(guild)
     return settingsFile
 }
 
+/* function  checkIdInFile(channelid)
+ * 
+ * description: Creates a settings file for the guild
+ * 
+ * parameters: string channelid: The channel id to check for in the settings file
+ * 			   string guildId: The guild id to get the settings for
+ *
+ * 
+ * Returns: None
+ */
+function checkIdInFile(guildId, channelid) {
+	const filePath = `./globalserversettings/permvoice/${guildId}/settings.cfg`;
+
+	try {
+		// Read the existing settings file
+		let fileContent = fs.readFileSync(filePath, 'utf-8');
+
+		// Split the file into lines
+		const lines = fileContent.split('\n');
+
+		for (const line of lines) {
+			if (line.trim() === channelid) {
+				return true; // Channel id found in the file
+			}
+		}
+
+		return false; // Channel id not found in the file
+	
+	} catch (error) {
+		//console.error('Error reading settings file:', error);
+		return false;
+	}
+}
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates] });
 
 client.cooldowns = new Collection();
@@ -101,8 +135,13 @@ client.on('voiceStateUpdate',
 			const guild = oldState.guild;
 			settings = readSettingsFile(guild.id)
 			guild.channels.fetch(oldState.channelId)
+
+			//Handle Channel deletion
 			.then(oldChannel => {
 				if (oldChannel.parentId === settings.category && oldChannel.members.size === 0 && oldChannel.id !== settings.voiceChannelId) {
+					if (checkIdInFile(guild.id, oldChannel.id)) {
+						return;
+					}
 				channelOwners.delete(oldChannel.id);
 				oldChannel.delete()
 					.then(() => {
