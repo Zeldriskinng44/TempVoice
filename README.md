@@ -3,8 +3,8 @@
 An open source upcoming implementation of a temp voice bot with user and admin commands. Should work on multiple servers.
 
 ### Acknowledgements
-Jacon500 - Some code optimizations and assistance with some features
-ZMaster - Some function setup and assistance
+- Jacon500 - Some code optimizations and assistance with some features
+- ZMaster - Some function setup and assistance
 
 ### Prerequisites
 
