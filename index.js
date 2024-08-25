@@ -8,6 +8,7 @@
  const { togglePrivate } = require('./methods/private');
  const { channel } = require('node:diagnostics_channel');
  const { waitingRoom } = require('./methods/waitingRoom');
+ const Settings  = require('./Settings');
  const token = process.env.DISCORD_TOKEN;
  
  const FIELD_CATERGORYID_NAME = "CATEGORYID"
@@ -69,41 +70,15 @@
 	 
 	 return settingsFile
  }
- 
- /* function  checkIdInFile(channelid)
-  * 
-  * description: Creates a settings file for the guild
-  * 
-  * parameters: string channelid: The channel id to check for in the settings file
-  * 			   string guildId: The guild id to get the settings for
-  *
-  * 
-  * Returns: None
-  */
- function checkIdInFile(guildId, channelid) {
-	 const filePath = `./globalserversettings/permvoice/${guildId}/settings.cfg`;
- 
-	 try {
-		 // Read the existing settings file
-		 let fileContent = fs.readFileSync(filePath, 'utf-8');
- 
-		 // Split the file into lines
-		 const lines = fileContent.split('\n');
- 
-		 for (const line of lines) {
-			 if (line.trim() === channelid) {
-				 return true; // Channel id found in the file
-			 }
-		 }
- 
-		 return false; // Channel id not found in the file
-	 
-	 } catch (error) {
-		 //console.error('Error reading settings file:', error);
-		 return false;
-	 }
- }
- 
+
+ function getByValue(map, searchValue) {
+	for (let [key, value] of map.entries()) {
+	  if (value === searchValue)
+		return key;
+	}
+  }
+
+
  const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates] });
  
  client.cooldowns = new Collection();
@@ -136,34 +111,46 @@
 			 const guild = oldState.guild;
 			 settings = readSettingsFile(guild.id)
 			 guild.channels.fetch(oldState.channelId)
- 
+
+
+			 //Check if the channel is a waiting room. If its main parent channel does not exist, delete the channel. Otherwise, keep the channel.
+
 			 //Handle Channel deletion
 			 .then(oldChannel => {
+				//Check if the channel is a waiting room. If its main parent channel id does not exist, delete the channel. Otherwise, keep the channel.
+				//The Waiting Room was specified in the format of: waitingRoom.set(currentChannel, channel.id); where currentChannel was the parent id, and channel.id was the waiting room id
+				//Check if we are given the waiting room id
+				if (waitingRoom.has(oldChannel.id)) {
+
+					targetid = waitingRoom.get(oldChannel.id)
+					guild.channels.fetch(targetid).then(target => {
+					target.delete()})
+
+					waitingRoom.get(oldChannel.id)
+					waitingRoom.delete(oldChannel.id);
+					return;
+			}
+
+				//If the channel is a perm channel, ignore it
+				if (Settings.doesChannelHavePermVoice(guild.id, oldChannel.id)) {
+					return;
+				}
+				 
+				//If a voice is detected inside the category, and empty and isn not the create channel, delete it
 				 if (oldChannel.parentId === settings.category && oldChannel.members.size === 0 && oldChannel.id !== settings.voiceChannelId) {
-					 if (waitingRoom.get(oldChannel.id)) {
-						 console.log(waitingRoom)
-						 return;
-					 }
-					 if (checkIdInFile(guild.id, oldChannel.id)) {
-						 return;
-					 }
- 
-				 channelOwners.delete(oldChannel.id);
-				 waitingRoom.delete(oldChannel.id);
-				 waitingRoomId = waitingRoom.get(oldChannel.id);
-				 if (waitingRoomId) {
-					 waitingRoomId.delete();
-				 }
-				 oldChannel.delete()
-					 .then(() => {
-						 //console.log(`Deleted empty channel: ${oldChannel.name}`);
-					 })
-					 .catch(error => {
-						 console.error('Error deleting channel:', error);
-					 });
-					 return;
-		 }
-	 })
+5					//Check if the channel is a perm vhannel, if so ignore it
+					channelOwners.delete(oldChannel.id);
+					oldChannel.delete()
+						.then(() => {
+							//console.log(`Deleted empty channel: ${oldChannel.name}`);
+						})
+						.catch(error => {
+							console.error('Error deleting channel:', error);
+						});
+						return;
+		 	}
+	 	}	
+	)
  }
 		 //Handle the channel creation if the user joins the create channel
 		 if (newState.channelId) {
