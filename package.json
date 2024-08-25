@@ -4,13 +4,14 @@
   "description": "Discord Bot",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "node test.js"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
+    "lodash": "^4.17.21",
     "sqlite3": "^5.1.7"
   }
 }
