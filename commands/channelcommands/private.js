@@ -11,6 +11,9 @@ module.exports = {
   async execute(interaction) {
     const guild = interaction.guild
     const member = await interaction.guild.members.fetch(interaction.user.id);
+    if (!member.voice.channel) {
+      return interaction.reply({ content: 'You must be in a voice channel to use this command.', ephemeral: true });
+  }
     const currentChannel = member.voice.channel.id;
     const targetChannel = guild.channels.cache.get(currentChannel);
 

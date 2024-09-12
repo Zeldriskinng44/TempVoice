@@ -16,7 +16,7 @@ const FIELD_VOICECREATECHANNELID_NAME = "VOICECREATECHANNELID"
  */
 function readSettingsFile(guild)
 {
-    fileContents = fs.readFileSync(`../../globalserversettings/setupsettings/${guild}/settings.cfg`, 'utf8')
+    fileContents = fs.readFileSync(`./globalserversettings/setupsettings/${guild}/settings.cfg`, 'utf8')
     const lines = fileContents.split('\n')
     settingsFile = {}
     for (const line of lines)
@@ -25,17 +25,16 @@ function readSettingsFile(guild)
 	{
 	    settingsFile.category = getValueFromField(FIELD_CATERGORYID_NAME, line)
             
-            if(settingsFile.category === null)
-                log.error(`Could not find the field ${FIELD_CATERGORYID_NAME}`)
+            if(!settingsFile.category)
+                console.error(`Could not find the field ${FIELD_CATERGORYID_NAME}`)
 	}
 	else if(line.startsWith(FIELD_VOICECREATECHANNELID_NAME))
 	{
 	    settingsFile.voiceChannelId = getValueFromField(FIELD_VOICECREATECHANNELID_NAME, line)
-            if(settingsFile.voiceChannelId === null)
-                log.error(`Could not find the field ${FIELD_VOICECREATECHANNELID_NAME}`)
+            if(!settingsFile.voiceChannelId)
+                console.error(`Could not find the field ${FIELD_VOICECREATECHANNELID_NAME}`)
 	}
     }
-    
     return settingsFile
 }
 
@@ -75,10 +74,12 @@ module.exports = {
 async execute(interaction) {
     const guild = interaction.guild
     const member = await interaction.guild.members.fetch(interaction.user.id);
+    if (!member.voice.channel) {
+      return interaction.reply({ content: 'You must be in a voice channel to use this command.', ephemeral: true });
+  }
     const currentChannel = member.voice.channel.id;
     const target = interaction.options.getBoolean('toggle');
     settings = readSettingsFile(guild.id)
-    category = settings.category
 
     //Check if the user is in a voice channel
     if (!channelOwners.has(currentChannel)) {
@@ -94,19 +95,21 @@ async execute(interaction) {
     try {
       //If the waiting room toggle is set to true
       if (target) {
+        // Grab position of the main channel and store it in a variable
+        const positionMain = member.voice.channel.rawPosition;
         guild.channels.create( {
           name: `${member.user.username}'s Waiting Room`,
           type: ChannelType.GuildVoice,
-          parent: category.id,
+          parent: settings.category,
+          position: positionMain - 1,
         })
           .then(channel => {
             //Bind the waiting room to the channel
             waitingRoom.set(currentChannel, channel.id);
             interaction.reply({ content:`The waiting room has been created.`, ephemeral: true });
-
           })
           .catch(error => {
-            //console.error('Error creating voice channel:', error);
+            console.error('Error creating voice channel:', error);
           });
       } else {
         //If the waiting room toggle is set to false
