@@ -78,6 +78,7 @@ async execute(interaction) {
       return interaction.reply({ content: 'You must be in a voice channel to use this command.', ephemeral: true });
   }
     const currentChannel = member.voice.channel.id;
+    const targetChannel = guild.channels.cache.get(currentChannel);
     const target = interaction.options.getBoolean('toggle');
     settings = readSettingsFile(guild.id)
 
@@ -107,6 +108,16 @@ async execute(interaction) {
             //Bind the waiting room to the channel
             waitingRoom.set(currentChannel, channel.id);
             interaction.reply({ content:`The waiting room has been created.`, ephemeral: true });
+
+            // Set the channel permissions for @everyone 
+            targetChannel.permissionOverwrites.edit(guild.roles.everyone, { Connect: false });
+
+            // Add the User to the channel
+            targetChannel.permissionOverwrites.edit(member, { Connect: true });
+
+            // Add the Bot to the channel
+            targetChannel.permissionOverwrites.edit(interaction.client.user, { Connect: true, ViewChannel: true });
+
           })
           .catch(error => {
             console.error('Error creating voice channel:', error);
@@ -126,7 +137,16 @@ async execute(interaction) {
         //Remove the waiting room from the waiting room collection
         waitingRoom.delete(currentChannel);
         interaction.reply({ content:`The waiting room has been deleted.`, ephemeral: true });
-        
+
+        // Remove the channel permissions for @everyone
+        targetChannel.permissionOverwrites.delete(guild.roles.everyone);
+
+        // Add the User to the channel
+        targetChannel.permissionOverwrites.edit(member, { ViewChannel: true });
+
+        // Add the Bot to the channel
+        targetChannel.permissionOverwrites.edit(interaction.client.user, { Connect: true, ViewChannel: true, Speak: true });
+      
       }
 
 
