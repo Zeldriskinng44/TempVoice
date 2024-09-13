@@ -15,7 +15,9 @@ An open source upcoming implementation of a temp voice bot with user and admin c
 - [Discord Developer Portal](https://discord.com/developers/applications) account to create your bot
 - [Discord.JS](https://discord.js.org/) (v14.x or higher)
 
-### Setup
+### Setup 
+This guide is for setting up the bot assuming you are hosting it yourself. If you are using someone else's copy of it, skip to Step 4. 
+
 1. To setup run the following commands
 ```npm
 npm install discord.js dotenv
@@ -32,4 +34,6 @@ SERVERID = ""
 SETTINGSFILE = "./globalserversettings/settings.json"
 ```
 
-You will need to run `node deploy-commands`.
+3. You will need to run `node deploy-commands`.
+
+4. In the server, run the `/setup` command and follow its instructions.
