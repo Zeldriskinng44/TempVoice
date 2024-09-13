@@ -1,12 +1,13 @@
 # TempVoice
 
-**This project is a work in progress and some features might cause crashes in its current state.**
+**This project is mostly complete, and nearly production-ready**
 
 An open source upcoming implementation of a temp voice bot with user and admin commands. Should work on multiple servers.
 
 ### Acknowledgements
-- Jacon500 - Some code optimizations and assistance with some features
+- Jacon500 - Some code optimizations and assistance with some features, and bug testing.
 - ZMaster - Some function setup and assistance
+- NickALafrance - Some function setup and assistance, and more.
 
 ### Prerequisites
 
