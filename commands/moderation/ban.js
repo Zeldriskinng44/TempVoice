@@ -46,7 +46,7 @@ module.exports = {
         //Set the target users PermissionsBitField for the channel
         const targetChannel = guild.channels.cache.get(currentChannel);
         // edits overwrites to allow a user to not connect to the channel
-        targetChannel.permissionOverwrites.edit(target, { Connect: false });
+        targetChannel.permissionOverwrites.edit(target, { Connect: false, ViewChannel: false });
 
         //Check if the target user is in the same voice channel
         if (targetnew.voice.channel && targetnew.voice.channel.id === member.voice.channel.id) {
