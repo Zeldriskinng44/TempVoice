@@ -27,7 +27,9 @@ DISCORD_TOKEN=""
 CLIENTID = ""
 ADMINROLEID = ""
 #SERVER ID IS REQUIRED FOR A SERVER TO DEPLOY GUILD COMMANDS TO.
-SERVERID = "" 
+SERVERID = ""
+# Where we will store the global server settings file
+SETTINGSFILE = "./globalserversettings/settings.json"
 ```
 
 You will need to run `node deploy-commands`.
