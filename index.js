@@ -210,7 +210,7 @@ client.on('voiceStateUpdate',
 						permissionOverwrites: [
 							{
 								id: newState.member.id,
-								allow: [PermissionFlagsBits.Connect, PermissionFlagsBits.Speak, PermissionFlagsBits.ViewChannel],
+								allow: [PermissionFlagsBits.Connect, PermissionFlagsBits.Speak, PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels],
 							},
 						],
 					})

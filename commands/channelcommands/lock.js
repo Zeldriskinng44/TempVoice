@@ -38,7 +38,7 @@ module.exports = {
             targetChannel.permissionOverwrites.edit(member, { Connect: true });
 
             // Add the Bot to the channel
-            targetChannel.permissionOverwrites.edit(interaction.client.user, { Connect: true, ViewChannel: true });
+            targetChannel.permissionOverwrites.edit(interaction.client.user, { Connect: true, ViewChannel: true, ManageChannels: true  });
     
             toggleLock.set(currentChannel, 1);
             return interaction.reply({ content: 'The channel was locked', ephemeral: true });
@@ -61,7 +61,7 @@ module.exports = {
             targetChannel.permissionOverwrites.edit(member, { ViewChannel: true });
 
             // Add the Bot to the channel
-            targetChannel.permissionOverwrites.edit(interaction.client.user, { Connect: true, ViewChannel: true, Speak: true });
+            targetChannel.permissionOverwrites.edit(interaction.client.user, { Connect: true, ViewChannel: true, Speak: true, ManageChannels: true });
     
             toggleLock.set(currentChannel, 0);
             return interaction.reply({ content: 'The channel was unlocked', ephemeral: true });

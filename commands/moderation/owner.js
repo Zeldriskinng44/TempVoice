@@ -21,6 +21,7 @@ module.exports = {
       return interaction.reply({ content: 'You must be in a voice channel to use this command.', ephemeral: true });
   }
     const currentChannel = member.voice.channel.id;
+    const targetChannel = guild.channels.cache.get(currentChannel);
     const target = interaction.options.getUser('target').id;
     const targetnew = guild.members.cache.get(target);
 
@@ -46,7 +47,9 @@ module.exports = {
         return interaction.reply({ content: `<@${target}> is not in the voice channel.`, ephemeral: true });
     }
       else {
+        targetChannel.permissionOverwrites.delete(interaction.user);
         channelOwners.set(currentChannel, target);
+        targetChannel.permissionOverwrites.edit(targetuser, { Connect: true, ViewChannel: true, Speak: true, ManageChannels: true });
         await interaction.reply({ content:`Channel ownership has been transferred to <@${target}>.`, ephemeral: true });
       }
     } catch (error) {
