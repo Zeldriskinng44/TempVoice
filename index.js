@@ -192,7 +192,13 @@ client.on('voiceStateUpdate',
 				//If the owner is the one who left the channel
 				if (oldState.member.id === ownerid.id) {
 					const ownerChannel = guild.channels.cache.get(oldState.channelId)
-					ownerChannel.send(`**${oldState.member.user.username}** has left the channel. You may /claim it to take ownership of it.`)
+					//Check if the owner is still in the voice channel, if so, ignore it
+					if (newState.channelId === ownerChannel.id) {
+						return
+					} else {
+						ownerChannel.send(`**${oldState.member.user.username}** has left the channel. You may /claim it to take ownership of it.`)
+						return
+					}
 				}
 			}}
 			catch (error) {
