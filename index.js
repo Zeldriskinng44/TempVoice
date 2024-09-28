@@ -184,6 +184,22 @@ client.on('voiceStateUpdate',
 		if (newState.channelId) {
 			const guild = newState.guild;
 			settings = readSettingsFile(guild.id)
+			//If the user of a channel leaves their main channel, send a message saying they left the channel
+			try {
+			//Check if the channel had the owner leave, if so, send a message to the owner
+			if (channelOwners.has(oldState.channelId)) {
+				const ownerid = guild.members.cache.get(channelOwners.get(oldState.channelId))
+				//If the owner is the one who left the channel
+				if (oldState.member.id === ownerid.id) {
+					const ownerChannel = guild.channels.cache.get(oldState.channelId)
+					ownerChannel.send(`**${oldState.member.user.username}** has left the channel. You may /claim it to take ownership of it.`)
+				}
+			}}
+			catch (error) {
+				console.warn('Error:', error);
+			}
+
+			//Check if the channel is a waiting room. If its main parent channel does not exist, delete the channel. Otherwise, keep the channel.
 			if (Array.from(waitingRoom.values()).includes(`${newState.channelId}`)) {
 				//Find the channel id that the waiting room  belongs to
 				const ownerChannelid = getByValue(waitingRoom, newState.channelId)
@@ -229,7 +245,7 @@ client.on('voiceStateUpdate',
 
 							const embed = new EmbedBuilder()
 								.setTitle("✏️ **Control your temporary channel**")
-								.setDescription("**Use the following buttons to modify the channel's settings or various slash commands to control how the channel works.\n\nYou can use commands such as:\n\nUtility Commands:\n`/rename`\n`/lock`\n`/private`\n`/bitrate`\n`/trust`\n`/limit`\n`/region`\n`/waitingroom`\n\nModeration Comamnds:\n`/ban`- To ban a user from your channel\n`/unban` - To unban a user from your channel\n`/kick` - Remove a user from the channel without banning\n`/owner` - Change the owner of the channel (requires you to own the said channel.\n\n **")
+								.setDescription("**Use the following buttons to modify the channel's settings or various slash commands to control how the channel works.\n\nYou can use commands such as:\n\nUtility Commands:\n`/rename`\n`/lock`\n`/private`\n`/bitrate`\n`/trust`\n`/limit`\n`/region`\n`/waitingroom`\n\nModeration Commands:\n`/ban` - To ban a user from your channel\n`/unban` - To unban a user from your channel\n`/kick` - Remove a user from the channel without banning\n`/owner` - Change the owner of the channel (requires you to own the said channel)\n`/claim` - Claim ownership of a channel if the owner has left.\n\n **")
 								.setColor("#f5cc00")
 								.setTimestamp();
 
