@@ -29,6 +29,11 @@ module.exports = {
         return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
     }
 
+    //Check if the channel original channel owner is still in the channel
+    if (targetChannel.members.has(channelOwners.get(currentChannel))) {
+        return interaction.reply({ content: 'The original channel owner is still in the channel.', ephemeral: true });
+    }
+
     // Transfer the ownership of the channel to the target user
 
     try {
